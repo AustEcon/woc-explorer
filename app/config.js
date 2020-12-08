@@ -3,6 +3,32 @@ var coins = require("./coins.js");
 
 var currentCoin = "BSV";
 
+function getElectrumXServers() {
+
+	// https://uasf.saltylemon.org/electrum
+	var DEFAULT_ELECTRUMX_SERVERS = [
+		// set host & port of electrum servers to connect to
+		// protocol can be "tls" or "tcp", it defaults to "tcp" if port is 50001 and "tls" otherwise
+		{host: "127.0.0.1", port:51001, protocol: "tcp"},
+		// {host: "sv1.hsmiths.com", port:60004, protocol: "ssl"},
+		// {host: "satoshi.vision.cash", port:50002, protocol: "ssl"},
+	]
+
+	// environment variable config for dockerization
+	// (host.docker.internal on win/mac and 172.17.0.1 on linux for gateway)
+	// if environment configuration is used, only a single ElectrumX server can be specified
+	var ELECTRUMX_HOST = (process.env.ELECTRUMX_HOST === undefined) ? "127.0.0.1" : process.env.ELECTRUMX_HOST;
+	var ELECTRUMX_PORT = (process.env.ELECTRUMX_PORT === undefined) ? 51001 : process.env.ELECTRUMX_PORT;
+	if (process.env.ELECTRUMX_HOST || process.env.ELECTRUMX_PORT){
+		ENV_VAR_ELECTRUMX_SERVER = [
+			{host: ELECTRUMX_HOST, port:ELECTRUMX_PORT, protocol: "tcp"},
+		];
+		return ENV_VAR_ELECTRUMX_SERVER;
+	} else {
+		return DEFAULT_ELECTRUMX_SERVERS;
+	}
+}
+
 module.exports = {
 	cookiePassword: "0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
 	demoSite: false,
@@ -72,16 +98,7 @@ module.exports = {
 		"walletpassphrasechange",
 	],
 
-	// https://uasf.saltylemon.org/electrum
-	electrumXServers:[
-		// set host & port of electrum servers to connect to
-		// protocol can be "tls" or "tcp", it defaults to "tcp" if port is 50001 and "tls" otherwise
-		{host: "127.0.0.1", port:51001, protocol: "tcp"},
-		// {host: "sv1.hsmiths.com", port:60004, protocol: "ssl"},
-	    // {host: "satoshi.vision.cash", port:50002, protocol: "ssl"},
-		// {host: "electrum.qtornado.com", port:50001, protocol: "tcp"},
-		// {host: "electrum.coinucopia.io", port:50001, protocol: "tcp"},
-	],
+	electrumXServers:getElectrumXServers(),
 
 	site: {
 		blockTxPageSize:10,
