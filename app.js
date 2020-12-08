@@ -68,21 +68,19 @@ app.runOnStartup = function() {
 
 	console.log("Running RPC Explorer for " + global.coinConfig.name);
 
+	// Environment variables take precedence over config.credentials.rpc defaults
 	var rpcCredentials = null;
 	if (config.credentials.rpc) {
-		rpcCredentials = config.credentials.rpc;
-
-	} else if (process.env.RPC_HOST) {
 		rpcCredentials = {
-			host: process.env.RPC_HOST,
-			port: process.env.RPC_PORT,
-			username: process.env.RPC_USERNAME,
-			password: process.env.RPC_PASSWORD
+			host: process.env.RPC_HOST ? process.env.RPC_HOST: config.credentials.rpc.host,
+			port: process.env.RPC_PORT ? process.env.RPC_PORT: config.credentials.rpc.port,
+			username: process.env.RPC_USERNAME ? process.env.RPC_USERNAME: config.credentials.rpc.username,
+			password: process.env.RPC_PASSWORD ? process.env.RPC_PASSWORD: config.credentials.rpc.password
 		};
 	}
 
 	if (rpcCredentials) {
-		console.log("Connecting via RPC to node at " + config.credentials.rpc.host + ":" + config.credentials.rpc.port);
+		console.log("Connecting via RPC to node at " + rpcCredentials.host + ":" + rpcCredentials.port);
 
 		global.client = new bitcoinCore({
 			host: rpcCredentials.host,
